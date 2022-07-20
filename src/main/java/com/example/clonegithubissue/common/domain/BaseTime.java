@@ -1,4 +1,4 @@
-package com.example.clonegithubissue.common.dto.domain;
+package com.example.clonegithubissue.common.domain;
 
 import java.time.LocalDateTime;
 import javax.persistence.Column;
