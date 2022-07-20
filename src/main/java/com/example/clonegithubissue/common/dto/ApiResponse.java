@@ -1,11 +1,13 @@
 package com.example.clonegithubissue.common.dto;
 
-import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@Getter
-public class ApiResponse<DataResponse> {
 
-	private List<DataResponse> data;
+@Getter
+@AllArgsConstructor
+public class ApiResponse {
+
+	private RootDataResponse data;
 
 }
