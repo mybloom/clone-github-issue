@@ -1,9 +1,10 @@
 package com.example.clonegithubissue.label;
 
 import com.example.clonegithubissue.common.dto.ApiResourceType;
-import com.example.clonegithubissue.common.dto.ApiResponse;
+import com.example.clonegithubissue.common.dto.GetApiResponse;
 import com.example.clonegithubissue.common.dto.RelationDataResponse;
 import com.example.clonegithubissue.common.dto.ResourceDataResponse;
+import com.example.clonegithubissue.exception.LabelNotFoundException;
 import com.example.clonegithubissue.label.dto.LabelListResponse;
 import com.example.clonegithubissue.member.Member;
 import com.example.clonegithubissue.member.dto.MemberDetailResponse;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -21,7 +23,8 @@ public class LabelService {
 
 	private final LabelRepository labelRepository;
 
-	public ApiResponse retrieveList(Long memberId, Integer page, Integer size) {
+	@Transactional(readOnly = true)
+	public GetApiResponse retrieveList(Long memberId, Integer page, Integer size) {
 
 		PageRequest pageRequest = PageRequest.of(page, size);
 		Page<Label> labels = labelRepository.findByAuthor(Member.of(memberId), pageRequest);
@@ -40,15 +43,36 @@ public class LabelService {
 			author = labels.getContent().get(0).getAuthor();
 		}
 
-		if(author == null) {
+		if (author == null) {
 			relationResponse.setAttributes(Collections.emptyList());
-		}else{
+		} else {
 			relationResponse.setAttributes(
-			List.of(new MemberDetailResponse(author.getOauthId(), author.getOauthName())));
+				List.of(new MemberDetailResponse(author.getOauthId(), author.getOauthName())));
 		}
 
 		dataResponse.setRelationships(relationResponse);
 
-		return new ApiResponse(dataResponse);
+		return new GetApiResponse(dataResponse);
+	}
+
+	@Transactional(readOnly = true)
+	public GetApiResponse retrieveDetail(Long memberId, Long labelId) {
+
+		Label label = labelRepository.findById(labelId)
+			.orElseThrow(LabelNotFoundException::new);
+
+		ResourceDataResponse<LabelListResponse> dataResponse = new ResourceDataResponse<>();
+		dataResponse.setType(ApiResourceType.LABEL.getResourceType());
+		dataResponse.setAttributes(
+			List.of(new LabelListResponse(label.getId(), label.getTitle(), label.getColor())));
+
+		RelationDataResponse<MemberDetailResponse> relationResponse = new RelationDataResponse<>();
+		relationResponse.setType(ApiResourceType.MEMBER.getResourceType());
+
+		Member author = label.getAuthor();
+		relationResponse.setAttributes(
+			List.of(new MemberDetailResponse(author.getOauthId(), author.getOauthName())));
+
+		return new GetApiResponse(dataResponse);
 	}
 }
