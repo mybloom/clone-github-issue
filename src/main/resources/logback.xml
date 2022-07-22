@@ -28,9 +28,8 @@
     <appender-ref ref="FILE"/>
   </logger>
 
-  <!-- 3. Output DispatcherServlet to console-->
-  <logger name="org.springframework.web.servlet.DispatcherServlet" additivity="true" level="DEBUG">
-    <appender-ref ref="STDOUT"/>
+  <logger name="p6spy" additivity="true" level="DEBUG">
+    <appender-ref ref="FILE"/>
   </logger>
 
   <root level="DEBUG">
