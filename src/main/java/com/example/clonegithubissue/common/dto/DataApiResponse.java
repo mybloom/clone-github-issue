@@ -6,8 +6,8 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class GetApiResponse {
+public class DataApiResponse<T> {
 
-	private ResourceDataResponse data;
+	private T data;
 
 }

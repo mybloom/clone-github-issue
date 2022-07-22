@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class ResourceDataResponse<T> {
+public class GetResourceResponse<T> {
 
 	private String type;
 	private List<T> attributes;
