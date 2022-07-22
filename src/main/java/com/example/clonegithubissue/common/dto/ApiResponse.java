@@ -8,6 +8,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ApiResponse {
 
-	private RootDataResponse data;
+	private ResourceDataResponse data;
 
 }
