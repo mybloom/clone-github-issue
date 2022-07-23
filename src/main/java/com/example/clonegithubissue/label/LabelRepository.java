@@ -17,4 +17,9 @@ public interface LabelRepository extends JpaRepository<Label, Long> {
 	Optional<Label> findById(Long labelId);
 
 	Optional<Label> findByIdAndAuthor(Long labelId, Member author);
+
+	void deleteByIdAndAuthor(Long labelId, Member author);
+
+	@Override
+	void delete(Label entity);
 }
