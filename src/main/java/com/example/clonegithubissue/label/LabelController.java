@@ -4,6 +4,7 @@ import com.example.clonegithubissue.common.dto.DataApiResponse;
 import com.example.clonegithubissue.label.dto.LabelSaveRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LabelController {
 
 	private final LabelService labelService;
-	private final static Long MEMBER_ID = 1L;
+	private final static Long MEMBER_ID = 2L;
 
 	@GetMapping("/labels")
 	public ResponseEntity<DataApiResponse> retrieveList(@RequestParam("page") Integer page,
@@ -48,5 +49,12 @@ public class LabelController {
 		DataApiResponse apiResponse = labelService.modifyOne(MEMBER_ID, labelId, labelSaveRequest);
 
 		return ResponseEntity.ok().body(apiResponse);
+	}
+
+	@DeleteMapping("/labels/{labelId}")
+	public ResponseEntity<DataApiResponse> deleteOne(@PathVariable Long labelId) {
+		labelService.deleteOne(MEMBER_ID, labelId);
+
+		return ResponseEntity.noContent().build();
 	}
 }
