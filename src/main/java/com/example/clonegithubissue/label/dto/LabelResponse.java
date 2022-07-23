@@ -5,10 +5,11 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class LabelListResponse {
+public class LabelResponse {
 
 	private Long id;
 	private String title;
 	private String color;
+	private String description;
 
 }
