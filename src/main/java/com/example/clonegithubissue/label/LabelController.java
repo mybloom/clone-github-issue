@@ -5,6 +5,7 @@ import com.example.clonegithubissue.label.dto.LabelSaveRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +38,14 @@ public class LabelController {
 	public ResponseEntity<DataApiResponse> createOne(
 		@RequestBody LabelSaveRequest labelSaveRequest) {
 		DataApiResponse apiResponse = labelService.createOne(MEMBER_ID, labelSaveRequest);
+
+		return ResponseEntity.ok().body(apiResponse);
+	}
+
+	@PatchMapping("/labels/{labelId}")
+	public ResponseEntity<DataApiResponse> modifyOne(@PathVariable Long labelId,
+		@RequestBody LabelSaveRequest labelSaveRequest) {
+		DataApiResponse apiResponse = labelService.modifyOne(MEMBER_ID, labelId, labelSaveRequest);
 
 		return ResponseEntity.ok().body(apiResponse);
 	}

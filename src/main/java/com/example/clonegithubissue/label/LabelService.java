@@ -1,17 +1,18 @@
 package com.example.clonegithubissue.label;
 
 import com.example.clonegithubissue.common.dto.ApiResourceType;
-import com.example.clonegithubissue.common.dto.CreateResourceResponse;
+import com.example.clonegithubissue.common.dto.OneResourceResponse;
+import com.example.clonegithubissue.common.dto.SaveResourceResponse;
 import com.example.clonegithubissue.common.dto.DataApiResponse;
 import com.example.clonegithubissue.common.dto.RelationDataResponse;
-import com.example.clonegithubissue.common.dto.GetResourceResponse;
+import com.example.clonegithubissue.common.dto.ListResourceResponse;
 import com.example.clonegithubissue.exception.LabelDuplicateDataException;
+import com.example.clonegithubissue.exception.LabelNoPermissionException;
 import com.example.clonegithubissue.exception.LabelNotFoundException;
 import com.example.clonegithubissue.label.dto.LabelResponse;
 import com.example.clonegithubissue.label.dto.LabelSaveRequest;
 import com.example.clonegithubissue.member.Member;
 import com.example.clonegithubissue.member.dto.MemberDetailResponse;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ public class LabelService {
 		PageRequest pageRequest = PageRequest.of(page, size);
 		Page<Label> labels = labelRepository.findByAuthor(Member.of(memberId), pageRequest);
 
-		GetResourceResponse<LabelResponse> dataResponse = new GetResourceResponse<>();
+		ListResourceResponse<LabelResponse> dataResponse = new ListResourceResponse<>();
 		dataResponse.setType(ApiResourceType.LABEL.getResourceType());
 		dataResponse.setAttributes(labels.stream()
 			.map(label -> new LabelResponse(label.getId(), label.getTitle(), label.getColor(),
@@ -66,11 +67,11 @@ public class LabelService {
 		Label label = labelRepository.findById(labelId)
 			.orElseThrow(LabelNotFoundException::new);
 
-		GetResourceResponse<LabelResponse> resourceResponse = new GetResourceResponse<>();
+		OneResourceResponse<LabelResponse> resourceResponse = new OneResourceResponse<>();
 		resourceResponse.setType(ApiResourceType.LABEL.getResourceType());
-		resourceResponse.setAttributes(
-			List.of(new LabelResponse(label.getId(), label.getTitle(), label.getColor(),
-				label.getDescription())));
+		resourceResponse.setAttribute(
+			new LabelResponse(label.getId(), label.getTitle(), label.getColor(),
+				label.getDescription()));
 
 		RelationDataResponse<MemberDetailResponse> relationResponse = new RelationDataResponse<>();
 		relationResponse.setType(ApiResourceType.MEMBER.getResourceType());
@@ -91,7 +92,25 @@ public class LabelService {
 		} catch (Exception e) {
 			throw new LabelDuplicateDataException();
 		}
-		CreateResourceResponse<LabelResponse> resourceResponse = new CreateResourceResponse<>();
+
+		return convertEntityToResponse(label);
+	}
+
+	@Transactional
+	public DataApiResponse modifyOne(Long memberId, Long labelId,
+		LabelSaveRequest labelSaveRequest) {
+
+		Label label = labelRepository.findByIdAndAuthor(labelId, Member.of(memberId))
+			.orElseThrow(LabelNoPermissionException::new);
+
+		label.modify(labelSaveRequest);
+		labelRepository.save(label);
+
+		return convertEntityToResponse(label);
+	}
+
+	private DataApiResponse convertEntityToResponse(Label label) {
+		SaveResourceResponse<LabelResponse> resourceResponse = new SaveResourceResponse<>();
 		resourceResponse.setType(ApiResourceType.LABEL.getResourceType());
 		resourceResponse.setAttribute(
 			new LabelResponse(label.getId(), label.getTitle(), label.getColor(),

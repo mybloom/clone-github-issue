@@ -45,4 +45,10 @@ public class Label extends BaseTime {
 			.author(Member.of(memberId))
 			.build();
 	}
+
+	public void modify(LabelSaveRequest labelSaveRequest) {
+		title = labelSaveRequest.getTitle();
+		color = labelSaveRequest.getColor();
+		description = labelSaveRequest.getDescription();
+	}
 }
