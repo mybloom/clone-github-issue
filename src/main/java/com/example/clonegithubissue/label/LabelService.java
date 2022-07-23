@@ -121,9 +121,7 @@ public class LabelService {
 
 	@Transactional
 	public void deleteOne(Long memberId, Long labelId) {
-//		Label label = labelRepository.findByIdAndAuthor(labelId, Member.of(memberId))
-//			.orElseThrow(LabelNoPermissionException::new);
-
-		labelRepository.deleteByIdAndAuthor(labelId, Member.of(memberId));
+		labelRepository.delete(labelRepository.findByIdAndAuthor(labelId, Member.of(memberId))
+			.orElseThrow(LabelNoPermissionException::new));
 	}
 }

@@ -46,6 +46,12 @@ public class Label extends BaseTime {
 			.build();
 	}
 
+	public static Label of(Long labelId) {
+		return Label.builder()
+			.id(labelId)
+			.build();
+	}
+
 	public void modify(LabelSaveRequest labelSaveRequest) {
 		title = labelSaveRequest.getTitle();
 		color = labelSaveRequest.getColor();
