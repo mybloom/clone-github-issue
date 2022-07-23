@@ -1,13 +1,17 @@
 package com.example.clonegithubissue.label;
 
 import com.example.clonegithubissue.common.dto.ApiResourceType;
-import com.example.clonegithubissue.common.dto.GetApiResponse;
+import com.example.clonegithubissue.common.dto.CreateResourceResponse;
+import com.example.clonegithubissue.common.dto.DataApiResponse;
 import com.example.clonegithubissue.common.dto.RelationDataResponse;
-import com.example.clonegithubissue.common.dto.ResourceDataResponse;
+import com.example.clonegithubissue.common.dto.GetResourceResponse;
+import com.example.clonegithubissue.exception.LabelDuplicateDataException;
 import com.example.clonegithubissue.exception.LabelNotFoundException;
-import com.example.clonegithubissue.label.dto.LabelListResponse;
+import com.example.clonegithubissue.label.dto.LabelResponse;
+import com.example.clonegithubissue.label.dto.LabelSaveRequest;
 import com.example.clonegithubissue.member.Member;
 import com.example.clonegithubissue.member.dto.MemberDetailResponse;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,15 +28,16 @@ public class LabelService {
 	private final LabelRepository labelRepository;
 
 	@Transactional(readOnly = true)
-	public GetApiResponse retrieveList(Long memberId, Integer page, Integer size) {
+	public DataApiResponse retrieveList(Long memberId, Integer page, Integer size) {
 
 		PageRequest pageRequest = PageRequest.of(page, size);
 		Page<Label> labels = labelRepository.findByAuthor(Member.of(memberId), pageRequest);
 
-		ResourceDataResponse<LabelListResponse> dataResponse = new ResourceDataResponse<>();
+		GetResourceResponse<LabelResponse> dataResponse = new GetResourceResponse<>();
 		dataResponse.setType(ApiResourceType.LABEL.getResourceType());
 		dataResponse.setAttributes(labels.stream()
-			.map(label -> new LabelListResponse(label.getId(), label.getTitle(), label.getColor()))
+			.map(label -> new LabelResponse(label.getId(), label.getTitle(), label.getColor(),
+				label.getDescription()))
 			.collect(Collectors.toList()));
 
 		RelationDataResponse<MemberDetailResponse> relationResponse = new RelationDataResponse<>();
@@ -52,19 +57,20 @@ public class LabelService {
 
 		dataResponse.setRelationships(relationResponse);
 
-		return new GetApiResponse(dataResponse);
+		return new DataApiResponse(dataResponse);
 	}
 
 	@Transactional(readOnly = true)
-	public GetApiResponse retrieveDetail(Long memberId, Long labelId) {
+	public DataApiResponse retrieveDetail(Long memberId, Long labelId) {
 
 		Label label = labelRepository.findById(labelId)
 			.orElseThrow(LabelNotFoundException::new);
 
-		ResourceDataResponse<LabelListResponse> dataResponse = new ResourceDataResponse<>();
-		dataResponse.setType(ApiResourceType.LABEL.getResourceType());
-		dataResponse.setAttributes(
-			List.of(new LabelListResponse(label.getId(), label.getTitle(), label.getColor())));
+		GetResourceResponse<LabelResponse> resourceResponse = new GetResourceResponse<>();
+		resourceResponse.setType(ApiResourceType.LABEL.getResourceType());
+		resourceResponse.setAttributes(
+			List.of(new LabelResponse(label.getId(), label.getTitle(), label.getColor(),
+				label.getDescription())));
 
 		RelationDataResponse<MemberDetailResponse> relationResponse = new RelationDataResponse<>();
 		relationResponse.setType(ApiResourceType.MEMBER.getResourceType());
@@ -72,7 +78,25 @@ public class LabelService {
 		Member author = label.getAuthor();
 		relationResponse.setAttributes(
 			List.of(new MemberDetailResponse(author.getOauthId(), author.getOauthName())));
+		resourceResponse.setRelationships(relationResponse);
 
-		return new GetApiResponse(dataResponse);
+		return new DataApiResponse(resourceResponse);
+	}
+
+	@Transactional
+	public DataApiResponse createOne(Long memberId, LabelSaveRequest labelSaveRequest) {
+		Label label = null;
+		try {
+			label = labelRepository.save(Label.from(labelSaveRequest, memberId));
+		} catch (Exception e) {
+			throw new LabelDuplicateDataException();
+		}
+		CreateResourceResponse<LabelResponse> resourceResponse = new CreateResourceResponse<>();
+		resourceResponse.setType(ApiResourceType.LABEL.getResourceType());
+		resourceResponse.setAttribute(
+			new LabelResponse(label.getId(), label.getTitle(), label.getColor(),
+				label.getDescription()));
+
+		return new DataApiResponse(resourceResponse);
 	}
 }
