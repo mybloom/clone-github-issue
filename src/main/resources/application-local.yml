@@ -1,27 +1,32 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/clone-github-issue
+    url: jdbc:mysql://localhost:3306/clone_github_issue
     username: issue
     password: 1234
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     properties:
       hibernate:
         #        show_sql: true
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
-    defer-datasource-initialization: true
+#    defer-datasource-initialization: true
     open-in-view: false
 
   #  추가해야 data.sql실행
-  sql:
-    init:
-      mode: always
+#  sql:
+#    init:
+#      mode: always
+
+decorator:
+  datasource:
+    p6spy.enable-logging: true
+#    p6spy.multiline: true
 
 logging.level:
   org.hibernate.SQL: debug
   org.springframework.transaction.interceptor: trace
-  #  org.hibernate.type: trace
+#  org.hibernate.type: trace
 #  org.hibernate.type.BasicTypeRegistry: WARN
