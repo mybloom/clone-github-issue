@@ -3,9 +3,11 @@
 ---
 
 ## SKill
-JDK 11
-Spring Boot 2.6.6
-Mysql 8.0.28
+- JDK 11
+- Spring Boot 2.6.6
+- Mysql 8.0.28
+- Spring Data JPA
+- Gradle
 
 ---
 
@@ -28,4 +30,4 @@ Mysql 8.0.28
 ---
 
 ##  API Specification
-
+- [Label API Specification](./docs/apiLabel.md)
