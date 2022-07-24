@@ -1,4 +1,4 @@
-package milestone;
+package com.example.clonegithubissue.milestone;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;

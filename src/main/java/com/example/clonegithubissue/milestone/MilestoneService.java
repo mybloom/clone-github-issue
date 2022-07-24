@@ -1,4 +1,4 @@
-package milestone;
+package com.example.clonegithubissue.milestone;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package milestone;
+package com.example.clonegithubissue.milestone;
 
 import com.example.clonegithubissue.issue.Issue;
 import java.time.LocalDate;
