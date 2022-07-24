@@ -15,6 +15,7 @@ import com.example.clonegithubissue.member.Member;
 import com.example.clonegithubissue.member.dto.MemberDetailResponse;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,10 @@ public class LabelService {
 
 	@Transactional(readOnly = true)
 	public DataApiResponse retrieveList(Long memberId, Integer page, Integer size) {
+//		page = Optional.ofNullable(page)
+//			.orElse(Label.DEFAULT_PAGE);
+//		size = Optional.ofNullable(size)
+//			.orElse(Label.DEFAULT_PAGE_SIZE);
 
 		PageRequest pageRequest = PageRequest.of(page, size);
 		Page<Label> labels = labelRepository.findByAuthor(Member.of(memberId), pageRequest);

@@ -23,6 +23,9 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Label extends BaseTime {
 
+	public static final Integer DEFAULT_PAGE = 0;
+	public static final Integer DEFAULT_PAGE_SIZE = 3;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
