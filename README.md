@@ -2,6 +2,13 @@
 
 ---
 
+## SKill
+JDK 11
+Spring Boot 2.6.6
+Mysql 8.0.28
+
+---
+
 ## Project Requirements
 
 ### Development Scope
@@ -19,4 +26,6 @@
 - [ ] Issue assignees can modify issues.
 
 ---
+
+##  API Specification
 
