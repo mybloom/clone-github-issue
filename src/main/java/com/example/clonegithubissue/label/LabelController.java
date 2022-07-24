@@ -52,7 +52,7 @@ public class LabelController {
 		try {
 			apiResponse = labelService.modifyOne(MEMBER_ID, labelId,
 				labelSaveRequest);
-		} catch (Exception e) {
+		} catch (RuntimeException e) {
 			throw new LabelDuplicateDataException();
 		}
 

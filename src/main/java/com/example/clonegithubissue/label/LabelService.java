@@ -89,7 +89,7 @@ public class LabelService {
 		Label label = null;
 		try {
 			label = labelRepository.save(Label.from(labelSaveRequest, memberId));
-		} catch (Exception e) {
+		} catch (RuntimeException e) {
 			throw new LabelDuplicateDataException();
 		}
 
@@ -98,7 +98,7 @@ public class LabelService {
 
 	@Transactional
 	public DataApiResponse modifyOne(Long memberId, Long labelId,
-		LabelSaveRequest labelSaveRequest) throws Exception {
+		LabelSaveRequest labelSaveRequest) throws RuntimeException {
 
 		Label label = labelRepository.findByIdAndAuthor(labelId, Member.of(memberId))
 			.orElseThrow(LabelNoPermissionException::new);
