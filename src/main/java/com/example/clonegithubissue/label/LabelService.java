@@ -98,13 +98,13 @@ public class LabelService {
 
 	@Transactional
 	public DataApiResponse modifyOne(Long memberId, Long labelId,
-		LabelSaveRequest labelSaveRequest) {
+		LabelSaveRequest labelSaveRequest) throws Exception {
 
 		Label label = labelRepository.findByIdAndAuthor(labelId, Member.of(memberId))
 			.orElseThrow(LabelNoPermissionException::new);
 
 		label.modify(labelSaveRequest);
-		labelRepository.save(label);
+		label = labelRepository.save(label);
 
 		return convertEntityToResponse(label);
 	}
