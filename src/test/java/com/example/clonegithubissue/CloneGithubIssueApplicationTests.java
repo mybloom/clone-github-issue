@@ -1,4 +1,4 @@
-package com.project.clonegithubissue;
+package com.example.clonegithubissue;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
