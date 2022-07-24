@@ -1,7 +1,9 @@
 package com.example.clonegithubissue.label;
 
 import com.example.clonegithubissue.common.dto.DataApiResponse;
+import com.example.clonegithubissue.exception.LabelDuplicateDataException;
 import com.example.clonegithubissue.label.dto.LabelSaveRequest;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,12 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class LabelController {
 
 	private final LabelService labelService;
-	private final static Long MEMBER_ID = 2L;
+	private final static Long MEMBER_ID = 1L;
 
 	@GetMapping("/labels")
-	public ResponseEntity<DataApiResponse> retrieveList(@RequestParam("page") Integer page,
-		@RequestParam("size") Integer size) {
-		DataApiResponse apiResponse = labelService.retrieveList(MEMBER_ID, page, size);
+	public ResponseEntity<DataApiResponse> retrieveList(
+		@RequestParam("page") Optional<Integer> page,
+		@RequestParam("size") Optional<Integer> size) {
+
+		DataApiResponse apiResponse = labelService.retrieveList(MEMBER_ID,
+			page.orElse(Label.DEFAULT_PAGE), size.orElse(Label.DEFAULT_PAGE_SIZE));
 
 		return ResponseEntity.ok().body(apiResponse);
 	}
@@ -46,7 +51,14 @@ public class LabelController {
 	@PatchMapping("/labels/{labelId}")
 	public ResponseEntity<DataApiResponse> modifyOne(@PathVariable Long labelId,
 		@RequestBody LabelSaveRequest labelSaveRequest) {
-		DataApiResponse apiResponse = labelService.modifyOne(MEMBER_ID, labelId, labelSaveRequest);
+
+		DataApiResponse apiResponse = null;
+		try {
+			apiResponse = labelService.modifyOne(MEMBER_ID, labelId,
+				labelSaveRequest);
+		} catch (RuntimeException e) {
+			throw new LabelDuplicateDataException();
+		}
 
 		return ResponseEntity.ok().body(apiResponse);
 	}

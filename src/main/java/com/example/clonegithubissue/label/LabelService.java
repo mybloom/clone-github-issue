@@ -15,6 +15,7 @@ import com.example.clonegithubissue.member.Member;
 import com.example.clonegithubissue.member.dto.MemberDetailResponse;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,10 @@ public class LabelService {
 
 	@Transactional(readOnly = true)
 	public DataApiResponse retrieveList(Long memberId, Integer page, Integer size) {
+//		page = Optional.ofNullable(page)
+//			.orElse(Label.DEFAULT_PAGE);
+//		size = Optional.ofNullable(size)
+//			.orElse(Label.DEFAULT_PAGE_SIZE);
 
 		PageRequest pageRequest = PageRequest.of(page, size);
 		Page<Label> labels = labelRepository.findByAuthor(Member.of(memberId), pageRequest);
@@ -89,7 +94,7 @@ public class LabelService {
 		Label label = null;
 		try {
 			label = labelRepository.save(Label.from(labelSaveRequest, memberId));
-		} catch (Exception e) {
+		} catch (RuntimeException e) {
 			throw new LabelDuplicateDataException();
 		}
 
@@ -98,13 +103,13 @@ public class LabelService {
 
 	@Transactional
 	public DataApiResponse modifyOne(Long memberId, Long labelId,
-		LabelSaveRequest labelSaveRequest) {
+		LabelSaveRequest labelSaveRequest) throws RuntimeException {
 
 		Label label = labelRepository.findByIdAndAuthor(labelId, Member.of(memberId))
 			.orElseThrow(LabelNoPermissionException::new);
 
 		label.modify(labelSaveRequest);
-		labelRepository.save(label);
+		label = labelRepository.save(label);
 
 		return convertEntityToResponse(label);
 	}
