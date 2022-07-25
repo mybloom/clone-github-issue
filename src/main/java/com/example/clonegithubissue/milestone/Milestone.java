@@ -1,7 +1,8 @@
 package com.example.clonegithubissue.milestone;
 
 import com.example.clonegithubissue.issue.Issue;
-import com.example.clonegithubissue.milestone.dto.MilestoneResponse;
+import com.example.clonegithubissue.milestone.dto.MilestoneGetResponse;
+import com.example.clonegithubissue.milestone.dto.MilestoneSaveRequest;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -58,6 +59,12 @@ public class Milestone {
 	@Transient
 	private int completionPercentage = 0;
 
+	public void modify(MilestoneSaveRequest milestoneSaveRequest) {
+		title = milestoneSaveRequest.getTitle();
+		description = milestoneSaveRequest.getDescription();
+		dueDate = milestoneSaveRequest.getDueDate();
+	}
+
 	private void calculateIssueCountByStatusAndCompletionPercentage() {
 		for (Issue issue : issues) {
 			if (issue.getOpened() == true) {
@@ -68,14 +75,15 @@ public class Milestone {
 		}
 
 		for (Issue issue : issues) {
-			completionPercentage = (int)(((double) closedIssueCount / (closedIssueCount + openIssueCount)) *100);
+			completionPercentage = (int) (
+				((double) closedIssueCount / (closedIssueCount + openIssueCount)) * 100);
 		}
 	}
 
-	public MilestoneResponse getMilestoneResponse() {
+	public MilestoneGetResponse getMilestoneResponse() {
 		calculateIssueCountByStatusAndCompletionPercentage();
 
-		return MilestoneResponse.builder()
+		return MilestoneGetResponse.builder()
 			.id(id)
 			.title(title)
 			.description(description)
@@ -83,6 +91,14 @@ public class Milestone {
 			.openIssueCount(openIssueCount)
 			.closedIssueCount(closedIssueCount)
 			.completionPercentage(completionPercentage)
+			.build();
+	}
+
+	public static Milestone from(MilestoneSaveRequest milestoneSaveRequest) {
+		return Milestone.builder()
+			.title(milestoneSaveRequest.getTitle())
+			.description(milestoneSaveRequest.getDescription())
+			.dueDate(milestoneSaveRequest.getDueDate())
 			.build();
 	}
 }

@@ -14,4 +14,7 @@ public interface MilestoneRepository extends JpaRepository<Milestone, Long> {
 	@EntityGraph(attributePaths = {"issues"})
 	@Override
 	Optional<Milestone> findById(Long milestoneId);
+
+	Optional<Milestone> findByIdAndAuthorId(Long milestoneId, Long authorId);
+
 }

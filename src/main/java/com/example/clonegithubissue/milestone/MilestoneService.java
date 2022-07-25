@@ -1,14 +1,22 @@
 package com.example.clonegithubissue.milestone;
 
+
 import com.example.clonegithubissue.common.dto.ApiResourceType;
 import com.example.clonegithubissue.common.dto.DataApiResponse;
 import com.example.clonegithubissue.common.dto.ListResourceResponse;
 import com.example.clonegithubissue.common.dto.OneResourceResponse;
 import com.example.clonegithubissue.common.dto.RelationDataResponse;
+import com.example.clonegithubissue.common.dto.SaveResourceResponse;
+import com.example.clonegithubissue.exception.LabelNoPermissionException;
+import com.example.clonegithubissue.exception.MilestoneDuplicateDataException;
 import com.example.clonegithubissue.exception.MilestoneNotFoundException;
 import com.example.clonegithubissue.issue.Issue;
-import com.example.clonegithubissue.member.dto.MemberDetailResponse;
-import com.example.clonegithubissue.milestone.dto.MilestoneResponse;
+import com.example.clonegithubissue.issue.dto.IssueListResponse;
+import com.example.clonegithubissue.milestone.dto.MilestoneGetResponse;
+import com.example.clonegithubissue.milestone.dto.MilestoneSaveRequest;
+import com.example.clonegithubissue.milestone.dto.MilestoneSaveResponse;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +38,7 @@ public class MilestoneService {
 		Page<Milestone> milestones = milestoneRepository.findByAuthorId(memberId, pageRequest);
 
 		//entity To DTO
-		ListResourceResponse<MilestoneResponse> dataResponse = new ListResourceResponse<>();
+		ListResourceResponse<MilestoneGetResponse> dataResponse = new ListResourceResponse<>();
 		dataResponse.setType(ApiResourceType.MILESTONE.getResourceType());
 		dataResponse.setAttributes(milestones.stream()
 			.map(milestone -> milestone.getMilestoneResponse())
@@ -41,21 +49,61 @@ public class MilestoneService {
 
 	@Transactional(readOnly = true)
 	public DataApiResponse retrieveDetail(Long memberId, Long milestoneId) {
-
 		Milestone milestone = milestoneRepository.findById(milestoneId)
 			.orElseThrow(MilestoneNotFoundException::new);
 
-		OneResourceResponse<MilestoneResponse> resourceResponse = new OneResourceResponse<>();
+		OneResourceResponse<MilestoneGetResponse> resourceResponse = new OneResourceResponse<>();
 		resourceResponse.setType(ApiResourceType.MILESTONE.getResourceType());
 		resourceResponse.setAttribute(milestone.getMilestoneResponse());
 
-		RelationDataResponse<MemberDetailResponse> relationResponse = new RelationDataResponse<>();
-		relationResponse.setType(ApiResourceType.MEMBER.getResourceType());
+		RelationDataResponse<IssueListResponse> relationResponse = new RelationDataResponse<>();
+		relationResponse.setType(ApiResourceType.ISSUE.getResourceType());
 
 		Set<Issue> issues = milestone.getIssues();
-		// TODO: implement issueListByMilestoneId() in IssueService then set relationResponse.
-//		relationResponse.setAttributes();
+		List<IssueListResponse> issueListResponses = issues.stream()
+			.map(IssueListResponse::from)
+			.collect(Collectors.toList());
+		issueListResponses.sort(Comparator.comparing(IssueListResponse::getOpened));
+		relationResponse.setAttributes(issueListResponses);
+
+		resourceResponse.setRelationships(relationResponse);
 
 		return new DataApiResponse(resourceResponse);
+	}
+
+	@Transactional
+	public DataApiResponse createOne(Long memberId, MilestoneSaveRequest milestoneSaveRequest) {
+		Milestone milestone = null;
+		try {
+			milestone = milestoneRepository.save(Milestone.from(milestoneSaveRequest));
+		} catch (RuntimeException e) {
+			throw new MilestoneDuplicateDataException();
+		}
+
+		return convertEntityToResponse(milestone);
+	}
+
+	private DataApiResponse convertEntityToResponse(Milestone milestone) {
+		SaveResourceResponse<MilestoneSaveResponse> resourceResponse = new SaveResourceResponse<>();
+		resourceResponse.setType(ApiResourceType.MILESTONE.getResourceType());
+		resourceResponse.setAttribute(MilestoneSaveResponse.from(milestone));
+
+		return new DataApiResponse(resourceResponse);
+	}
+
+	@Transactional
+	public DataApiResponse modifyOne(Long memberId, Long milestoneId,
+		MilestoneSaveRequest milestoneSaveRequest) throws RuntimeException {
+		Milestone milestone = milestoneRepository.findByIdAndAuthorId(milestoneId, memberId)
+			.orElseThrow(LabelNoPermissionException::new);
+
+		milestone.modify(milestoneSaveRequest);
+		milestone = milestoneRepository.save(milestone);
+
+		return convertEntityToResponse(milestone);
+	}
+
+	public void deleteOne(Long memberId, Long milestoneId) {
+
 	}
 }

@@ -1,5 +1,6 @@
 package com.example.clonegithubissue.milestone.dto;
 
+import com.example.clonegithubissue.milestone.Milestone;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -11,7 +12,7 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class MilestoneResponse {
+public class MilestoneGetResponse {
 
 	private Long id;
 	private String title;
@@ -21,4 +22,11 @@ public class MilestoneResponse {
 	private int openIssueCount;
 	private int closedIssueCount;
 
+	public static MilestoneGetResponse from(Milestone milestone) {
+		return MilestoneGetResponse.builder()
+			.title(milestone.getTitle())
+			.description(milestone.getDescription())
+			.dueDate(milestone.getDueDate())
+			.build();
+	}
 }

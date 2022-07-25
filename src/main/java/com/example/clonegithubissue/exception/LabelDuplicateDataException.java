@@ -4,6 +4,6 @@ public class LabelDuplicateDataException extends DuplicateDataException {
 
 	@Override
 	protected String getBodyMessage() {
-		return "Label name has already been taken";
+		return "Label title has already been taken";
 	}
 }
