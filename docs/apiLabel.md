@@ -13,7 +13,7 @@
 
 * **URL**
 
-  /category
+  /labels?page=0&size=3
 
 * **Method:**
 

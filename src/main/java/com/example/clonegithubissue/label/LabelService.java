@@ -31,10 +31,6 @@ public class LabelService {
 
 	@Transactional(readOnly = true)
 	public DataApiResponse retrieveList(Long memberId, Integer page, Integer size) {
-//		page = Optional.ofNullable(page)
-//			.orElse(Label.DEFAULT_PAGE);
-//		size = Optional.ofNullable(size)
-//			.orElse(Label.DEFAULT_PAGE_SIZE);
 
 		PageRequest pageRequest = PageRequest.of(page, size);
 		Page<Label> labels = labelRepository.findByAuthor(Member.of(memberId), pageRequest);

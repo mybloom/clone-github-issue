@@ -31,3 +31,5 @@
 
 ##  API Specification
 - [Label API Specification](./docs/apiLabel.md)
+- [Milestone API Specification](./docs/apiMilestone.md)
+
