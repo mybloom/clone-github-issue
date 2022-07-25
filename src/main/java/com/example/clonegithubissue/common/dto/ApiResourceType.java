@@ -4,7 +4,8 @@ public enum ApiResourceType {
 
 	LABEL("labels"),
 	MEMBER("members"),
-	MILESTONE("milestones");
+	MILESTONE("milestones"),
+	ISSUE("issues");
 
 	private final String resourceType;
 

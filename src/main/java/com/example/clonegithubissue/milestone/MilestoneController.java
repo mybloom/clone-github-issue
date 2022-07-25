@@ -8,6 +8,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,6 +26,13 @@ public class MilestoneController {
 
 		DataApiResponse apiResponse = milestoneService.retrieveList(MEMBER_ID,
 			page.orElse(Milestone.DEFAULT_PAGE), size.orElse(Milestone.DEFAULT_PAGE_SIZE));
+
+		return ResponseEntity.ok().body(apiResponse);
+	}
+
+	@GetMapping("/milestones/{milestoneId}")
+	public ResponseEntity<DataApiResponse> retrieveDetail(@PathVariable Long milestoneId) {
+		DataApiResponse apiResponse = milestoneService.retrieveDetail(MEMBER_ID, milestoneId);
 
 		return ResponseEntity.ok().body(apiResponse);
 	}
