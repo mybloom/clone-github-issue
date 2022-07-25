@@ -3,7 +3,8 @@ package com.example.clonegithubissue.common.dto;
 public enum ApiResourceType {
 
 	LABEL("labels"),
-	MEMBER("members");
+	MEMBER("members"),
+	MILESTONE("milestones");
 
 	private final String resourceType;
 
