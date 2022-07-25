@@ -9,9 +9,11 @@ import com.example.clonegithubissue.common.dto.RelationDataResponse;
 import com.example.clonegithubissue.common.dto.SaveResourceResponse;
 import com.example.clonegithubissue.exception.LabelNoPermissionException;
 import com.example.clonegithubissue.exception.MilestoneDuplicateDataException;
+import com.example.clonegithubissue.exception.MilestoneNoPermissionException;
 import com.example.clonegithubissue.exception.MilestoneNotFoundException;
 import com.example.clonegithubissue.issue.Issue;
 import com.example.clonegithubissue.issue.dto.IssueListResponse;
+import com.example.clonegithubissue.member.Member;
 import com.example.clonegithubissue.milestone.dto.MilestoneGetResponse;
 import com.example.clonegithubissue.milestone.dto.MilestoneSaveRequest;
 import com.example.clonegithubissue.milestone.dto.MilestoneSaveResponse;
@@ -75,7 +77,7 @@ public class MilestoneService {
 	public DataApiResponse createOne(Long memberId, MilestoneSaveRequest milestoneSaveRequest) {
 		Milestone milestone = null;
 		try {
-			milestone = milestoneRepository.save(Milestone.from(milestoneSaveRequest));
+			milestone = milestoneRepository.save(Milestone.from(milestoneSaveRequest, memberId));
 		} catch (RuntimeException e) {
 			throw new MilestoneDuplicateDataException();
 		}
@@ -103,7 +105,9 @@ public class MilestoneService {
 		return convertEntityToResponse(milestone);
 	}
 
+	@Transactional
 	public void deleteOne(Long memberId, Long milestoneId) {
-
+		milestoneRepository.delete(milestoneRepository.findByIdAndAuthorId(milestoneId, memberId)
+			.orElseThrow(MilestoneNoPermissionException::new));
 	}
 }

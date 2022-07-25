@@ -94,11 +94,12 @@ public class Milestone {
 			.build();
 	}
 
-	public static Milestone from(MilestoneSaveRequest milestoneSaveRequest) {
+	public static Milestone from(MilestoneSaveRequest milestoneSaveRequest, Long authorId) {
 		return Milestone.builder()
 			.title(milestoneSaveRequest.getTitle())
 			.description(milestoneSaveRequest.getDescription())
 			.dueDate(milestoneSaveRequest.getDueDate())
+			.authorId(authorId)
 			.build();
 	}
 }
