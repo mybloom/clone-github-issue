@@ -2,13 +2,22 @@
 
 ---
 
-## SKill
+## Skill
 - JDK 11
 - Spring Boot 2.6.6
 - Mysql 8.0.28
 - Spring Data JPA
 - Gradle
 
+---
+## Installation
+```
+git clone https://github.com/mybloom/clone-github-issue.git
+cd clone-github-issue
+chmod +x gradlew
+./gradlew build
+nohup java -jar clone-github-issue-0.0.1.jar &
+```
 ---
 
 ## Project Requirements
