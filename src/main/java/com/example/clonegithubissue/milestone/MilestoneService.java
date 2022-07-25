@@ -13,7 +13,6 @@ import com.example.clonegithubissue.exception.MilestoneNoPermissionException;
 import com.example.clonegithubissue.exception.MilestoneNotFoundException;
 import com.example.clonegithubissue.issue.Issue;
 import com.example.clonegithubissue.issue.dto.IssueListResponse;
-import com.example.clonegithubissue.member.Member;
 import com.example.clonegithubissue.milestone.dto.MilestoneGetResponse;
 import com.example.clonegithubissue.milestone.dto.MilestoneSaveRequest;
 import com.example.clonegithubissue.milestone.dto.MilestoneSaveResponse;
